@@ -89,7 +89,12 @@ Este proyecto fue desarrollado y estructurado utilizando:
 
 <br>
 
-![Fedora](https://img.shields.io/badge/Fedora-2F4153?style=for-the-badge&logo=fedora&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+<div align="center">
+  <img src="https://img.shields.io/badge/Fedora-2F4153?style=for-the-badge&logo=fedora&logoColor=white" height="45"> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" height="45"> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" height="45"> &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" height="45">
+</div>
 
 <br>
 
