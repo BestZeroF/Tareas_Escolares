@@ -31,31 +31,12 @@ Para que cualquier desarrollador externo pueda replicar y levantar este proyecto
 
 ## 💻 Entorno de Desarrollo
 
-Este proyecto fue desarrollado y estructurado desde:
+Este proyecto fue desarrollado y estructurado utilizando:
 
-<pre>
-          .',;::::;,'.
-      .';:cccccccccccc:;,.
-    .;cccccccccccccccccccc;.
-   .:cccccccccccccccccccccc:.
-  .;ccccccccccccc;.:dddl:.;cc;.
- .:ccccccccccccc;OWMKOOXMWd;cc:.
- .:ccccccccccccc;KMMc;cc;xMMc:cc:.
- ,cccccccccccccc;MMM.;cc;;WW::cc,.
- :cccccccccccccc;MMM.;cccccccc:.
- :ccccccc;oxOOOo;MMM.;cccccccc:.
- :ccccccc;0MMKxO;OMM.;cccccccc:.
- :ccccccc;0MMc;c;KMM.;cccccccc:.
- :ccccccc;0MMc;c;KMM.;cccccccc:.
- :ccccccc;0MMc;c;KMM.;cccccccc:.
- .,:cccc;0MMc;c;KMM.;cccc:,.
-   '::cc;0MMc;c;KMM.;cc::'
-     ':::;0MMc;c;KMM.;:::'
-       ..;0MMc;c;KMM.;..
-           '...'
-</pre>
-
-**Fedora Workstation**
+![Fedora](https://img.shields.io/badge/Fedora-2F4153?style=for-the-badge&logo=fedora&logoColor=white)
+![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
 ---
 
