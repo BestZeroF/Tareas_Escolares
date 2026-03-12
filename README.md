@@ -29,14 +29,65 @@ Para que cualquier desarrollador externo pueda replicar y levantar este proyecto
 
 ---
 
+## 🚏 Endpoints de la API
+
+A continuación se describen las rutas creadas para gestionar los diferentes módulos de la aplicación. *(Nota: Las rutas base dependen de cómo se hayan montado en el archivo principal `app.js`)*.
+
+### 🕒 Horarios
+| Endpoint | Método | Descripción |
+| :--- | :---: | :--- |
+| `/` | POST | Crear un nuevo horario |
+| `/materia/:id_materia` | GET | Consultar el horario de una materia en particular |
+| `/` | GET | Consultar todos los horarios |
+| `/:id` | PUT | Actualizar un horario por id |
+| `/:id` | DELETE | Eliminar un horario por id |
+
+### 📚 Materias
+| Endpoint | Método | Descripción |
+| :--- | :---: | :--- |
+| `/` | POST | Crear una nueva materia |
+| `/` | GET | Listar todas las materias |
+| `/:id_periodo` | GET | Listar materias por periodo |
+| `/detalle/:id` | GET | Obtener detalle de una materia |
+| `/:id` | PUT | Actualizar una materia |
+| `/:id` | DELETE | Eliminar una materia |
+
+### 📅 Periodos
+| Endpoint | Método | Descripción |
+| :--- | :---: | :--- |
+| `/` | POST | Crear un nuevo periodo |
+| `/` | GET | Listar los periodos del usuario |
+| `/:id` | GET | Obtener un periodo específico por id |
+| `/:id` | PUT | Actualizar un periodo |
+| `/:id` | DELETE | Eliminar un periodo |
+
+### 📝 Tareas
+| Endpoint | Método | Descripción |
+| :--- | :---: | :--- |
+| `/` | POST | Crear una nueva tarea |
+| `/` | GET | Obtener todas las tareas |
+| `/:id` | GET | Obtener una tarea específica por id |
+| `/:id` | PUT | Actualizar una tarea |
+| `/:id/completar` | PATCH | Marcar una tarea como completada |
+| `/:id` | DELETE | Eliminar una tarea |
+| `/estado/pendientes` | GET | Consultar las tareas pendientes |
+| `/estado/vencidas` | GET | Consultar las tareas vencidas |
+| `/estado/completadas` | GET | Consultar las tareas completadas |
+
+---
+
 ## 💻 Entorno de Desarrollo
 
 Este proyecto fue desarrollado y estructurado utilizando:
+
+<div align="center">
 
 ![Fedora](https://img.shields.io/badge/Fedora-2F4153?style=for-the-badge&logo=fedora&logoColor=white)
 ![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+
+</div>
 
 ---
 
