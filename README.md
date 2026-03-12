@@ -33,23 +33,32 @@ Para que cualquier desarrollador externo pueda replicar y levantar este proyecto
 
 Este proyecto fue desarrollado y estructurado desde:
 
-```text
-      .',;::::;,'.
-  .';:cccccccccccc:;,.
-.;cccccccccccccccccccc;.
-.:cccccccccccccccccccccccc:.
-.;ccccccccccccc;.:dddl:.;cc;.
-.:ccccccccccccc;OWMKOOXMWd;cc:.
-.:ccccccccccccc;KMMc;cc;xMMc:cc:.
-,cccccccccccccc;MMM.;cc;;WW::cc,.
-:cccccccccccccc;MMM.;cccccccc:.
-:ccccccc;oxOOOo;MMM.;cccccccc:.
-:ccccccc;0MMKxO;OMM.;cccccccc:.
-:ccccccc;0MMc;c;KMM.;cccccccc:.
-:ccccccc;0MMc;c;KMM.;cccccccc:.
-:ccccccc;0MMc;c;KMM.;cccccccc:.
-.,:cccc;0MMc;c;KMM.;cccc:,.
-  '::cc;0MMc;c;KMM.;cc::'
-    ':::;0MMc;c;KMM.;:::'
-      ..;0MMc;c;KMM.;..
-          '...'
+<pre>
+          .',;::::;,'.
+      .';:cccccccccccc:;,.
+    .;cccccccccccccccccccc;.
+   .:cccccccccccccccccccccc:.
+  .;ccccccccccccc;.:dddl:.;cc;.
+ .:ccccccccccccc;OWMKOOXMWd;cc:.
+ .:ccccccccccccc;KMMc;cc;xMMc:cc:.
+ ,cccccccccccccc;MMM.;cc;;WW::cc,.
+ :cccccccccccccc;MMM.;cccccccc:.
+ :ccccccc;oxOOOo;MMM.;cccccccc:.
+ :ccccccc;0MMKxO;OMM.;cccccccc:.
+ :ccccccc;0MMc;c;KMM.;cccccccc:.
+ :ccccccc;0MMc;c;KMM.;cccccccc:.
+ :ccccccc;0MMc;c;KMM.;cccccccc:.
+ .,:cccc;0MMc;c;KMM.;cccc:,.
+   '::cc;0MMc;c;KMM.;cc::'
+     ':::;0MMc;c;KMM.;:::'
+       ..;0MMc;c;KMM.;..
+           '...'
+</pre>
+
+**Fedora Workstation**
+
+---
+
+🎓 **Universidad:** Universidad Politécnica de Bacalar  
+👨‍💻 **Desarrollador:** Gerardo Amaro Buitron  
+📅 **Fecha:** 12 de Marzo de 2026
