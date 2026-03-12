@@ -18,6 +18,20 @@ REFERENCES usuarios(id_usuario)
 ON DELETE CASCADE
 );
 
+CREATE TABLE tareas (
+    id_tarea SERIAL PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    fecha_entrega DATE NOT NULL,
+    completada BOOLEAN DEFAULT FALSE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_materia INT NOT NULL,
+    CONSTRAINT fk_tarea_materia
+        FOREIGN KEY (id_materia)
+        REFERENCES materias(id_materia)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE materias(
 id_materia SERIAL PRIMARY KEY,
 nombre VARCHAR(100) NOT NULL,
@@ -41,4 +55,18 @@ CONSTRAINT fk_horario_materia
 FOREIGN KEY (id_materia)
 REFERENCES materias(id_materia)
 ON DELETE CASCADE
+);
+
+CREATE TABLE tareas (
+    id_tarea SERIAL PRIMARY KEY,
+    titulo VARCHAR(150) NOT NULL,
+    descripcion TEXT,
+    fecha_entrega DATE NOT NULL,
+    completada BOOLEAN DEFAULT FALSE,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    id_materia INT NOT NULL,
+    CONSTRAINT fk_tarea_materia
+        FOREIGN KEY (id_materia)
+        REFERENCES materias(id_materia)
+        ON DELETE CASCADE
 );
