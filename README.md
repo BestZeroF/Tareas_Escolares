@@ -1,10 +1,7 @@
-<div align="center">
+# `[ Proyecto Tareas Escolares ]`
 
-# `[ 📝 Proyecto Tareas Escolares ]`
 > `~ $ ./iniciar_servidor.sh` <br>
 > *Una API RESTful construida para la gestión y control de tareas escolares.*
-
-</div>
 
 ---
 
@@ -20,8 +17,6 @@ Para que cualquier desarrollador externo pueda replicar y levantar este proyecto
 
 > **`console.log("Nota:");`** Una vez clonado el repositorio, asegúrate de ejecutar `npm install` en la terminal para descargar todas las librerías necesarias.
 
-<div align="center">
-
 | Herramienta / Librería | Versión | Propósito / Descripción |
 | :--- | :---: | :--- |
 | **Node.js** | `Entorno` | Entorno de ejecución de JavaScript en el servidor. |
@@ -33,15 +28,11 @@ Para que cualquier desarrollador externo pueda replicar y levantar este proyecto
 | **dotenv** | `^17.3.1` | Carga de variables de entorno (como credenciales de BD) desde el archivo `.env`. |
 | **nodemon** | `^3.1.14` | `[Dev]` Herramienta que reinicia el servidor al detectar cambios. |
 
-</div>
-
 ---
 
 ## `>_ Endpoints de la API`
 
 A continuación se describen las rutas creadas para gestionar los diferentes módulos de la aplicación. *(Nota: Las rutas base dependen de cómo se hayan montado en el archivo principal `app.js`)*.
-
-<div align="center">
 
 ### `[ 🕒 /api/horarios ]`
 | Endpoint | Método | Descripción |
@@ -90,25 +81,21 @@ A continuación se describen las rutas creadas para gestionar los diferentes mó
 | `/estado/vencidas` | `GET` | Consultar las tareas vencidas |
 | `/estado/completadas` | `GET` | Consultar las tareas completadas |
 
-</div>
-
 ---
 
 ## `>_ Entorno de Desarrollo`
 
 Este proyecto fue desarrollado y estructurado utilizando:
 
-<div align="center">
+<br>
 
 ![Fedora](https://img.shields.io/badge/Fedora-2F4153?style=for-the-badge&logo=fedora&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 
-</div>
+<br>
 
 ---
 
-<div align="center">
 <code>zero@fedora:~/Tareas_Escolares$ exit</code> <br><br>
-🎓 <b>Universidad:</b> Universidad Politécnica de Bacalar <br>
-👨‍💻 <b>Desarrollador:</b> Gerardo Amaro Buitron <br>
-📅 <b>Fecha:</b> 12 de Marzo de 2026
-</div>
+🎓 **Universidad:** Universidad Politécnica de Bacalar <br>
+👨‍💻 **Desarrollador:** Gerardo Amaro Buitron <br>
+📅 **Fecha:** 12 de Marzo de 2026
