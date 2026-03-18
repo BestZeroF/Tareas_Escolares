@@ -54,7 +54,7 @@ export default function Layout() {
         >
           <div className="w-full flex justify-center -mb-12 mt-2 group-hover:scale-105 transition-transform duration-300">
             {/* dark:text-white hace que el SVG se vuelva blanco */}
-            <Logo className="text-blue-950 dark:text-white w-64 h-auto transform scale-150 transition-colors duration-300" />
+            <Logo className="text-blue-950 mb-5 dark:text-white w-64 h-auto transform scale-150 transition-colors duration-300" />
           </div>
           <span className="text-2xl font-extrabold tracking-tight relative z-10 mt-4 text-gray-900 dark:text-white transition-colors duration-300">
             Educational <span className="text-blue-950 dark:text-blue-400">Sort</span>
