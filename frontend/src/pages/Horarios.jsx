@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api/axios';
-import { Plus, Trash2, Clock as ClockIcon, X } from 'lucide-react';
+import { Plus, Trash2, Clock as ClockIcon, X, List, Calendar as CalendarIcon } from 'lucide-react';
 
 export default function Horarios() {
   const [horarios, setHorarios] = useState([]);
@@ -8,6 +8,7 @@ export default function Horarios() {
   const [loading, setLoading] = useState(true);
   
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [vista, setVista] = useState('calendario'); // 'calendario' | 'lista'
   
   const [idMateria, setIdMateria] = useState('');
   const [diaSemana, setDiaSemana] = useState('Lun');
@@ -20,7 +21,12 @@ export default function Horarios() {
     { valor: 'Lun', etiqueta: 'Lunes' }, { valor: 'Mar', etiqueta: 'Martes' },
     { valor: 'Mie', etiqueta: 'Miércoles' }, { valor: 'Jue', etiqueta: 'Jueves' }, { valor: 'Vie', etiqueta: 'Viernes' }
   ];
-  const horas = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00'];
+  
+  // Generamos horas de 07:00 a 14:00 para la vista visual
+  const horasVisuales = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00'];
+  
+  // Generamos horas desde las 01:00 hasta las 23:00 para el formulario
+  const horasFormulario = Array.from({ length: 23 }, (_, i) => `${String(i + 1).padStart(2, '0')}:00`);
   
   const paletaColores = [
     { id: 'blue', bg: 'bg-blue-100', border: 'border-blue-300', text: 'text-blue-900' },
@@ -36,10 +42,14 @@ export default function Horarios() {
   const fetchDatos = async () => {
     try {
       const [resH, resM] = await Promise.all([api.get('/horarios'), api.get('/materias')]);
-      setHorarios(resH.data); setMaterias(resM.data);
+      setHorarios(resH.data); 
+      setMaterias(resM.data);
       if (resM.data.length > 0) setIdMateria(resM.data[0].id_materia);
-    } catch (e) { mostrarMensaje('Error', 'error'); } 
-    finally { setLoading(false); }
+    } catch (e) { 
+      mostrarMensaje('Error al cargar datos', 'error'); 
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   const mostrarMensaje = (texto, tipo) => {
@@ -49,8 +59,6 @@ export default function Horarios() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // 1. Validar que la hora tenga sentido lógico
     const inicioNum = parseInt(horaInicio.substring(0, 2));
     const finNum = parseInt(horaFin.substring(0, 2));
 
@@ -58,30 +66,22 @@ export default function Horarios() {
       return mostrarMensaje('La hora fin debe ser posterior a la de inicio', 'error');
     }
 
-    // 2. VALIDACIÓN ESTRELLA: Evitar que las clases se encimen
+    // Validación de choques
     const choque = horarios.find(h => {
       if (h.dia_semana !== diaSemana) return false;
       const hIni = parseInt(h.hora_inicio.substring(0, 2));
       const hFin = parseInt(h.hora_fin.substring(0, 2));
-      // Fórmula matemática de colisión: (Inicio A < Fin B) y (Fin A > Inicio B)
       return (inicioNum < hFin) && (finNum > hIni);
     });
 
-    if (choque) {
-      // Si choca, bloqueamos el envío y le decimos al usuario con qué materia chocó
-      return mostrarMensaje(`¡Cuidado! Este horario choca con "${choque.materia || 'otra materia'}"`, 'error');
-    }
+    if (choque) return mostrarMensaje(`Este horario choca con "${choque.materia || 'otra clase'}"`, 'error');
 
-    // 3. Si todo está libre, guardamos en la base de datos
     try {
       await api.post('/horarios', { 
-        id_materia: idMateria, 
-        dia_semana: diaSemana, 
-        hora_inicio: horaInicio + ':00', 
-        hora_fin: horaFin + ':00', 
-        color: colorSeleccionado 
+        id_materia: idMateria, dia_semana: diaSemana, 
+        hora_inicio: horaInicio + ':00', hora_fin: horaFin + ':00', color: colorSeleccionado 
       });
-      mostrarMensaje('Clase agregada', 'exito');
+      mostrarMensaje('Clase agregada al horario', 'exito');
       setMostrarFormulario(false);
       fetchDatos();
     } catch (error) { 
@@ -89,9 +89,18 @@ export default function Horarios() {
     }
   };
 
-  const eliminarHorario = async (id) => {
-    if (!window.confirm('¿Eliminar bloque?')) return;
-    try { await api.delete(`/horarios/${id}`); fetchDatos(); } catch (e) {}
+  const eliminarHorario = async (id, e) => {
+    // Detiene la propagación del clic para que no falle dentro del div absoluto
+    if (e) e.stopPropagation(); 
+    if (!window.confirm('¿Estás seguro de eliminar esta clase de tu horario?')) return;
+    
+    try { 
+      await api.delete(`/horarios/${id}`); 
+      mostrarMensaje('Clase eliminada', 'exito');
+      fetchDatos(); 
+    } catch (error) {
+      mostrarMensaje('Error al eliminar', 'error');
+    }
   };
 
   const obtenerEstilosColor = (colorId) => {
@@ -99,25 +108,46 @@ export default function Horarios() {
     return `${color.bg} ${color.border} ${color.text}`;
   };
 
+  const getEtiquetaDia = (valor) => dias.find(d => d.valor === valor)?.etiqueta || valor;
+
   if (loading) return <div className="p-8 text-center text-gray-500">Cargando...</div>;
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto h-[calc(100vh-8rem)] flex flex-col">
       
-      <div className="flex justify-between items-center mb-4">
+      {/* Encabezado con Botones */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <div className="flex items-center gap-3">
           <div className="bg-blue-950 p-3 rounded-xl shadow-md"><ClockIcon className="text-white w-6 h-6" /></div>
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Mi Horario Escolar</h1>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Mi Horario</h1>
         </div>
         
-        {materias.length > 0 && (
-          <button
-            onClick={() => setMostrarFormulario(!mostrarFormulario)}
-            className={`px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm ${mostrarFormulario ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-blue-950 text-white hover:bg-blue-900'}`}
-          >
-            {mostrarFormulario ? <><X className="w-5 h-5" /> Cerrar Panel</> : <><Plus className="w-5 h-5" /> Agregar Clase</>}
-          </button>
-        )}
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          {/* Toggle Vista */}
+          <div className="flex bg-gray-200 p-1 rounded-xl shadow-inner">
+            <button 
+              onClick={() => setVista('calendario')} 
+              className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${vista === 'calendario' ? 'bg-white shadow-sm text-blue-950' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              <CalendarIcon className="w-4 h-4" /> Visual
+            </button>
+            <button 
+              onClick={() => setVista('lista')} 
+              className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${vista === 'lista' ? 'bg-white shadow-sm text-blue-950' : 'text-gray-500 hover:text-gray-800'}`}
+            >
+              <List className="w-4 h-4" /> Lista
+            </button>
+          </div>
+
+          {materias.length > 0 && (
+            <button
+              onClick={() => setMostrarFormulario(!mostrarFormulario)}
+              className={`px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-sm whitespace-nowrap ${mostrarFormulario ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-blue-950 text-white hover:bg-blue-900'}`}
+            >
+              {mostrarFormulario ? <><X className="w-5 h-5" /> Cerrar</> : <><Plus className="w-5 h-5" /> Agregar</>}
+            </button>
+          )}
+        </div>
       </div>
 
       {mensaje.texto && (
@@ -132,49 +162,98 @@ export default function Horarios() {
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 flex-1 min-h-0">
           
-          {/* Panel Principal: Calendario */}
+          {/* Panel Principal: Puede ser Calendario o Lista */}
           <div className={`transition-all duration-300 h-full ${mostrarFormulario ? 'xl:col-span-3' : 'xl:col-span-4'}`}>
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
-              <div className="overflow-auto flex-1 p-4">
-                <table className="w-full min-w-[600px] border-collapse table-fixed h-full">
-                  <thead>
-                    <tr>
-                      <th className="w-20 p-2 border-b-2 border-gray-100"></th>
-                      {dias.map(d => <th key={d.valor} className="p-3 text-center border-b-2 border-gray-100 text-gray-700 font-bold">{d.etiqueta}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {horas.map((hora) => (
-                      <tr key={hora}>
-                        <td className="p-2 border-b border-gray-100 text-sm font-semibold text-gray-500 text-right align-top border-r h-20">{hora}</td>
-                        {dias.map(dia => {
-                          const claseInicio = horarios.find(h => h.dia_semana === dia.valor && h.hora_inicio.substring(0, 5) === hora);
-                          const claseEnCurso = horarios.find(h => {
-                            const hIni = parseInt(h.hora_inicio.substring(0, 2)), hFin = parseInt(h.hora_fin.substring(0, 2)), hAct = parseInt(hora.substring(0, 2));
-                            return h.dia_semana === dia.valor && hAct > hIni && hAct < hFin;
-                          });
-
-                          if (claseEnCurso) return null;
-
-                          if (claseInicio) {
-                            const duracion = parseInt(claseInicio.hora_fin.substring(0,2)) - parseInt(claseInicio.hora_inicio.substring(0,2));
-                            return (
-                              <td key={`${dia.valor}-${hora}`} rowSpan={duracion} className="border border-gray-50 p-0 relative align-top">
-                                <div className={`absolute inset-1.5 rounded-xl border flex flex-col justify-center items-center text-center p-2 shadow-sm group hover:shadow-md hover:z-10 transition-all ${obtenerEstilosColor(claseInicio.color)}`}>
-                                  <span className="font-bold text-sm sm:text-base">{claseInicio.materia}</span>
-                                  <span className="text-xs font-semibold opacity-75 mt-1">{claseInicio.hora_inicio.substring(0,5)} - {claseInicio.hora_fin.substring(0,5)}</span>
-                                  <button onClick={() => eliminarHorario(claseInicio.id_horario)} className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-600 bg-white/70 hover:bg-red-200 p-1.5 rounded-lg"><Trash2 className="w-4 h-4" /></button>
-                                </div>
-                              </td>
-                            );
-                          }
-                          return <td key={`${dia.valor}-${hora}`} className="border border-gray-50 p-1.5 relative h-20"><div className="w-full h-full border border-dashed border-transparent hover:border-gray-200 rounded-lg"></div></td>;
-                        })}
+              
+              {vista === 'lista' ? (
+                // VISTA DE LISTA (Muestra absolutamente todo en la BD)
+                <div className="overflow-auto flex-1 p-6">
+                  {horarios.length === 0 ? (
+                    <div className="h-full flex items-center justify-center text-gray-400">No hay clases registradas en tu base de datos.</div>
+                  ) : (
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm">
+                          <th className="p-4 font-semibold">Materia</th>
+                          <th className="p-4 font-semibold">Día</th>
+                          <th className="p-4 font-semibold">Horario</th>
+                          <th className="p-4 font-semibold text-center w-32">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {horarios.map(h => (
+                          <tr key={h.id_horario} className="hover:bg-gray-50 transition-colors">
+                            <td className="p-4 font-bold text-gray-900">
+                              <span className={`inline-block w-3 h-3 rounded-full mr-2 ${obtenerEstilosColor(h.color).split(' ')[0]}`}></span>
+                              {h.materia}
+                            </td>
+                            <td className="p-4 text-gray-700 font-medium">{getEtiquetaDia(h.dia_semana)}</td>
+                            <td className="p-4 text-gray-600">{h.hora_inicio.substring(0,5)} - {h.hora_fin.substring(0,5)}</td>
+                            <td className="p-4 text-center">
+                              <button 
+                                onClick={(e) => eliminarHorario(h.id_horario, e)} 
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              >
+                                <Trash2 className="w-5 h-5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              ) : (
+                // VISTA VISUAL (Calendario)
+                <div className="overflow-auto flex-1 p-4">
+                  <table className="w-full min-w-[600px] border-collapse table-fixed h-full">
+                    <thead>
+                      <tr>
+                        <th className="w-20 p-2 border-b-2 border-gray-100"></th>
+                        {dias.map(d => <th key={d.valor} className="p-3 text-center border-b-2 border-gray-100 text-gray-700 font-bold">{d.etiqueta}</th>)}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody>
+                      {horasVisuales.map((hora) => (
+                        <tr key={hora}>
+                          <td className="p-2 border-b border-gray-100 text-sm font-semibold text-gray-500 text-right align-top border-r h-20">{hora}</td>
+                          {dias.map(dia => {
+                            const claseInicio = horarios.find(h => h.dia_semana === dia.valor && h.hora_inicio.substring(0, 5) === hora);
+                            const claseEnCurso = horarios.find(h => {
+                              const hIni = parseInt(h.hora_inicio.substring(0, 2)), hFin = parseInt(h.hora_fin.substring(0, 2)), hAct = parseInt(hora.substring(0, 2));
+                              return h.dia_semana === dia.valor && hAct > hIni && hAct < hFin;
+                            });
+
+                            if (claseEnCurso) return null;
+
+                            if (claseInicio) {
+                              const duracion = parseInt(claseInicio.hora_fin.substring(0,2)) - parseInt(claseInicio.hora_inicio.substring(0,2));
+                              return (
+                                <td key={`${dia.valor}-${hora}`} rowSpan={duracion} className="border border-gray-50 p-0 relative align-top">
+                                  <div className={`absolute inset-1.5 rounded-xl border flex flex-col justify-center items-center text-center p-2 shadow-sm group hover:shadow-md hover:z-10 transition-all ${obtenerEstilosColor(claseInicio.color)}`}>
+                                    <span className="font-bold text-sm sm:text-base">{claseInicio.materia}</span>
+                                    <span className="text-xs font-semibold opacity-75 mt-1">{claseInicio.hora_inicio.substring(0,5)} - {claseInicio.hora_fin.substring(0,5)}</span>
+                                    
+                                    {/* Botón de borrar con propagación detenida */}
+                                    <button 
+                                      onClick={(e) => eliminarHorario(claseInicio.id_horario, e)} 
+                                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 text-red-600 bg-white/80 hover:bg-red-200 p-1.5 rounded-lg z-20 cursor-pointer"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </td>
+                              );
+                            }
+                            return <td key={`${dia.valor}-${hora}`} className="border border-gray-50 p-1.5 relative h-20"><div className="w-full h-full border border-dashed border-transparent hover:border-gray-200 rounded-lg"></div></td>;
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
 
@@ -195,11 +274,11 @@ export default function Horarios() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Inicio</label>
-                      <select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">{horas.map(h => <option key={h} value={h}>{h}</option>)}</select>
+                      <select value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">{horasFormulario.map(h => <option key={h} value={h}>{h}</option>)}</select>
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1">Fin</label>
-                      <select value={horaFin} onChange={(e) => setHoraFin(e.target.value)} className="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">{[...horas.slice(1), '15:00'].map(h => <option key={h} value={h}>{h}</option>)}</select>
+                      <select value={horaFin} onChange={(e) => setHoraFin(e.target.value)} className="w-full px-3 py-3 bg-gray-50 border border-gray-200 rounded-xl outline-none">{[...horasFormulario.slice(1), '24:00'].map(h => <option key={h} value={h}>{h}</option>)}</select>
                     </div>
                   </div>
                   <div>

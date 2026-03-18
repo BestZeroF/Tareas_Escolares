@@ -7,8 +7,9 @@ import Logo from './Logo';
 export default function Layout() {
   const { user, logout } = useContext(AuthContext);
 
+  // Le quitamos el "(Calendario)"
   const menuItems = [
-    { name: 'Inicio (Calendario)', path: '/', icon: Home },
+    { name: 'Inicio', path: '/', icon: Home },
     { name: 'Periodos', path: '/periodos', icon: Calendar },
     { name: 'Materias', path: '/materias', icon: BookMarked },
     { name: 'Tareas', path: '/tareas', icon: CheckSquare },
@@ -21,9 +22,8 @@ export default function Layout() {
       {/* Sidebar / Menú Lateral */}
       <aside className="w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm hidden md:flex">
         
-        {/* Logo y Título en el Dashboard */}
+        {/* Logo y Título */}
         <div className="p-6 border-b border-gray-100 flex flex-col items-center justify-center text-center overflow-hidden">
-          {/* Logo mucho más grande, usando w-64 y scale-150 para que domine el espacio, con un margen negativo fuerte para pegarlo al texto */}
           <div className="w-full flex justify-center -mb-12 mt-2">
             <Logo className="text-blue-950 mb-10 w-64 h-auto transform scale-150" />
           </div>

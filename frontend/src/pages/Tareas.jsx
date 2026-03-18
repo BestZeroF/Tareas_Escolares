@@ -134,14 +134,8 @@ export default function Tareas() {
                       {tareas.map((t) => (
                         <tr key={t.id_tarea} className={t.completada ? 'bg-gray-50/50 opacity-75' : 'hover:bg-gray-50/50'}>
                           <td className="p-4 text-center">
-  <button 
-    onClick={() => marcarCompletada(t.id_tarea)} 
-    className={`transition-colors ${t.completada ? 'text-green-500 hover:text-gray-400' : 'text-gray-300 hover:text-green-500'}`}
-    title={t.completada ? "Desmarcar tarea" : "Marcar como completada"}
-  >
-    {t.completada ? <CheckCircle className="w-7 h-7 mx-auto" /> : <Circle className="w-7 h-7 mx-auto" />}
-  </button>
-</td>
+                            {t.completada ? <CheckCircle className="w-7 h-7 text-green-500 mx-auto" /> : <button onClick={() => marcarCompletada(t.id_tarea)} className="text-gray-300 hover:text-green-500"><Circle className="w-7 h-7" /></button>}
+                          </td>
                           <td className="p-4">
                             <p className={`font-bold text-gray-900 ${t.completada ? 'line-through text-gray-500' : ''}`}>{t.titulo}</p>
                             {t.descripcion && <p className="text-sm text-gray-500 mt-1 line-clamp-2">{t.descripcion}</p>}
