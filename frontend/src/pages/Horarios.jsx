@@ -49,13 +49,44 @@ export default function Horarios() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (parseInt(horaInicio) >= parseInt(horaFin)) return mostrarMensaje('La hora fin debe ser posterior a la de inicio', 'error');
+    
+    // 1. Validar que la hora tenga sentido lógico
+    const inicioNum = parseInt(horaInicio.substring(0, 2));
+    const finNum = parseInt(horaFin.substring(0, 2));
+
+    if (inicioNum >= finNum) {
+      return mostrarMensaje('La hora fin debe ser posterior a la de inicio', 'error');
+    }
+
+    // 2. VALIDACIÓN ESTRELLA: Evitar que las clases se encimen
+    const choque = horarios.find(h => {
+      if (h.dia_semana !== diaSemana) return false;
+      const hIni = parseInt(h.hora_inicio.substring(0, 2));
+      const hFin = parseInt(h.hora_fin.substring(0, 2));
+      // Fórmula matemática de colisión: (Inicio A < Fin B) y (Fin A > Inicio B)
+      return (inicioNum < hFin) && (finNum > hIni);
+    });
+
+    if (choque) {
+      // Si choca, bloqueamos el envío y le decimos al usuario con qué materia chocó
+      return mostrarMensaje(`¡Cuidado! Este horario choca con "${choque.materia || 'otra materia'}"`, 'error');
+    }
+
+    // 3. Si todo está libre, guardamos en la base de datos
     try {
-      await api.post('/horarios', { id_materia: idMateria, dia_semana: diaSemana, hora_inicio: horaInicio + ':00', hora_fin: horaFin + ':00', color: colorSeleccionado });
+      await api.post('/horarios', { 
+        id_materia: idMateria, 
+        dia_semana: diaSemana, 
+        hora_inicio: horaInicio + ':00', 
+        hora_fin: horaFin + ':00', 
+        color: colorSeleccionado 
+      });
       mostrarMensaje('Clase agregada', 'exito');
       setMostrarFormulario(false);
       fetchDatos();
-    } catch (error) { mostrarMensaje('Error', 'error'); }
+    } catch (error) { 
+      mostrarMensaje('Error al guardar en el servidor', 'error'); 
+    }
   };
 
   const eliminarHorario = async (id) => {
@@ -101,7 +132,7 @@ export default function Horarios() {
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-8 flex-1 min-h-0">
           
-          {/* Panel Principal: Calendario (Se expande si form está cerrado) */}
+          {/* Panel Principal: Calendario */}
           <div className={`transition-all duration-300 h-full ${mostrarFormulario ? 'xl:col-span-3' : 'xl:col-span-4'}`}>
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden h-full flex flex-col">
               <div className="overflow-auto flex-1 p-4">

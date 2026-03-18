@@ -71,7 +71,7 @@ exports.obtenerTodasLasTareas = async (req, res) => {
 
 /**
  * ==============================
- * MARCAR COMO COMPLETADA
+ * MARCAR COMO COMPLETADA (ALTERNAR)
  * ==============================
  */
 exports.marcarComoCompletada = async (req, res) => {
@@ -81,7 +81,7 @@ exports.marcarComoCompletada = async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE tareas t
-       SET completada = TRUE
+       SET completada = NOT t.completada
        FROM materias m
        JOIN periodos p ON m.id_periodo = p.id_periodo
        WHERE t.id_tarea = $1
@@ -204,7 +204,7 @@ exports.eliminarTarea = async (req, res) => {
 /**
  * ==============================
  * CONSULTAS ESPECIALES
- *  => TAREAS PENDIENTES
+ * => TAREAS PENDIENTES
  * ==============================
  */
  exports.tareasPendientes = async (req, res) => {
@@ -228,7 +228,7 @@ exports.eliminarTarea = async (req, res) => {
 /**
  * ==============================
  * CONSULTAS ESPECIALES
- *  => TAREAS VENCIDAS
+ * => TAREAS VENCIDAS
  * ==============================
  */
  exports.tareasVencidas = async (req, res) => {
@@ -253,7 +253,7 @@ exports.eliminarTarea = async (req, res) => {
 /**
  * ==============================
  * CONSULTAS ESPECIALES
- *  => TAREAS COMPLETADAS
+ * => TAREAS COMPLETADAS
  * ==============================
  */
  exports.tareasCompletadas = async (req, res) => {

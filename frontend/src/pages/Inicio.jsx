@@ -8,7 +8,8 @@ import {
   BookOpen, 
   Calendar as CalendarIcon,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  Trash2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -40,38 +41,46 @@ export default function Inicio() {
     }
   };
 
-  const marcarCompletada = async (id) => {
+  const alternarTarea = async (id) => {
     try {
       await api.patch(`/tareas/${id}/completar`);
-      fetchDatos(); // Recargar para actualizar la lista y las estadísticas
+      fetchDatos(); 
     } catch (error) {
-      console.error("Error al completar tarea", error);
+      console.error("Error al actualizar tarea", error);
     }
   };
 
-  // --- LÓGICA PARA EL DASHBOARD ---
+  // NUEVO: Función para limpiar clases "fantasma" desde el inicio
+  const eliminarHorario = async (id) => {
+    if (!window.confirm('¿Eliminar esta clase de tu agenda?')) return;
+    try {
+      await api.delete(`/horarios/${id}`);
+      fetchDatos();
+    } catch (error) {
+      console.error("Error al eliminar horario", error);
+    }
+  };
 
-  // 1. Obtener la fecha actual y el día de la semana (para filtrar el horario)
   const fechaHoy = new Date();
   const opcionesFecha = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
   const fechaFormateada = fechaHoy.toLocaleDateString('es-ES', opcionesFecha);
   
-  // Mapear el día de JS (0-6) a tu formato de 3 letras de la BD ('Dom', 'Lun', 'Mar'...)
   const diasAbrev = ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'];
   const diaHoyAbrev = diasAbrev[fechaHoy.getDay()];
 
-  // 2. Filtrar Clases de Hoy (Ordenadas por hora de inicio)
   const clasesHoy = horarios
     .filter(h => h.dia_semana === diaHoyAbrev)
     .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
 
-  // 3. Filtrar Tareas Pendientes (Ordenadas por fecha de entrega más próxima)
-  const tareasPendientes = tareas
-    .filter(t => !t.completada)
-    .sort((a, b) => new Date(a.fecha_entrega) - new Date(b.fecha_entrega));
+  // Modificado: Ahora mostramos todas, pero las pendientes van arriba
+  const tareasOrdenadas = [...tareas].sort((a, b) => {
+    if (a.completada === b.completada) {
+      return new Date(a.fecha_entrega) - new Date(b.fecha_entrega);
+    }
+    return a.completada ? 1 : -1; // Pendientes (false) van primero
+  });
 
-  // 4. Estadísticas
-  const totalPendientes = tareasPendientes.length;
+  const totalPendientes = tareas.filter(t => !t.completada).length;
   const totalCompletadas = tareas.filter(t => t.completada).length;
   const progresoTareas = tareas.length === 0 ? 0 : Math.round((totalCompletadas / tareas.length) * 100);
 
@@ -105,7 +114,7 @@ export default function Inicio() {
         </div>
       </div>
 
-      {/* SECCIÓN 2: Tarjetas de Resumen (Stats) */}
+      {/* SECCIÓN 2: Tarjetas de Resumen */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center gap-5 hover:shadow-md transition-shadow">
           <div className="bg-orange-100 p-4 rounded-2xl text-orange-600"><AlertCircle className="w-8 h-8" /></div>
@@ -132,7 +141,7 @@ export default function Inicio() {
         </div>
       </div>
 
-      {/* SECCIÓN 3: Contenido Principal (Agenda y Tareas) */}
+      {/* SECCIÓN 3: Contenido Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Agenda de Hoy */}
@@ -164,9 +173,17 @@ export default function Inicio() {
                     <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-white bg-blue-950 text-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-sm z-10">
                       <BookOpen className="w-4 h-4" />
                     </div>
-                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow relative group">
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-blue-950">{clase.materia}</span>
+                        {/* Botón para borrar directo desde el inicio */}
+                        <button 
+                          onClick={() => eliminarHorario(clase.id_horario)} 
+                          className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                          title="Eliminar esta clase"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
                       <p className="text-sm text-gray-500 font-medium">
                         {clase.hora_inicio.substring(0,5)} - {clase.hora_fin.substring(0,5)}
@@ -183,22 +200,21 @@ export default function Inicio() {
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col h-[500px]">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50 rounded-t-3xl">
             <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6 text-orange-500" /> Próximas a Entregar
+              <TrendingUp className="w-6 h-6 text-orange-500" /> Mis Tareas
             </h2>
             <Link to="/tareas" className="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors">Ver todas</Link>
           </div>
           
           <div className="p-2 flex-1 overflow-y-auto">
-            {tareasPendientes.length === 0 ? (
+            {tareasOrdenadas.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-400 text-center p-6">
                 <CheckCircle className="w-12 h-12 mb-3 text-green-200" />
                 <p className="font-bold text-lg text-gray-600">¡Todo al día!</p>
-                <p>No tienes tareas pendientes por ahora.</p>
+                <p>No tienes tareas registradas por ahora.</p>
               </div>
             ) : (
               <ul className="divide-y divide-gray-50">
-                {tareasPendientes.map(tarea => {
-                  // Calcular si la tarea es para hoy o si ya está atrasada
+                {tareasOrdenadas.map(tarea => {
                   const fechaEntrega = new Date(tarea.fecha_entrega);
                   const hoy = new Date();
                   hoy.setHours(0,0,0,0);
@@ -207,22 +223,23 @@ export default function Inicio() {
                   let badgeColor = "bg-blue-50 text-blue-700 border-blue-200";
                   let textoFecha = new Date(tarea.fecha_entrega).toLocaleDateString('es-ES', { month: 'short', day: 'numeric' });
                   
-                  if (diferenciaDias < 0) { badgeColor = "bg-red-50 text-red-700 border-red-200"; textoFecha = "Atrasada"; }
+                  if (tarea.completada) { badgeColor = "bg-green-50 text-green-700 border-green-200"; textoFecha = "Lista"; }
+                  else if (diferenciaDias < 0) { badgeColor = "bg-red-50 text-red-700 border-red-200"; textoFecha = "Atrasada"; }
                   else if (diferenciaDias === 0) { badgeColor = "bg-orange-50 text-orange-700 border-orange-200"; textoFecha = "Hoy"; }
                   else if (diferenciaDias === 1) { badgeColor = "bg-yellow-50 text-yellow-700 border-yellow-200"; textoFecha = "Mañana"; }
 
                   return (
-                    <li key={tarea.id_tarea} className="p-4 hover:bg-gray-50 flex items-start gap-4 transition-colors rounded-2xl m-2">
+                    <li key={tarea.id_tarea} className={`p-4 hover:bg-gray-50 flex items-start gap-4 transition-colors rounded-2xl m-2 ${tarea.completada ? 'opacity-60' : ''}`}>
                       <button 
-                        onClick={() => marcarCompletada(tarea.id_tarea)}
-                        className="mt-1 text-gray-300 hover:text-green-500 transition-colors shrink-0"
-                        title="Marcar como completada"
+                        onClick={() => alternarTarea(tarea.id_tarea)}
+                        className={`mt-1 transition-colors shrink-0 ${tarea.completada ? 'text-green-500 hover:text-gray-400' : 'text-gray-300 hover:text-green-500'}`}
+                        title={tarea.completada ? "Desmarcar tarea" : "Marcar como completada"}
                       >
-                        <Circle className="w-6 h-6" />
+                        {tarea.completada ? <CheckCircle className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
                       </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2 mb-1">
-                          <p className="font-bold text-gray-900 truncate">{tarea.titulo}</p>
+                          <p className={`font-bold text-gray-900 truncate ${tarea.completada ? 'line-through' : ''}`}>{tarea.titulo}</p>
                           <span className={`text-xs font-bold px-2.5 py-1 rounded-md border shrink-0 ${badgeColor}`}>
                             {textoFecha}
                           </span>
