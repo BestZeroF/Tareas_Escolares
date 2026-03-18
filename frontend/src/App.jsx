@@ -10,6 +10,7 @@ import Periodos from './pages/Periodos'; // <-- Tu nuevo CRUD real
 import Materias from './pages/Materias';
 import Tareas from './pages/Tareas';
 import Horarios from './pages/Horarios';
+import Inicio from './pages/Inicio';
 
 // Componente para proteger las rutas
 const RutaPrivada = ({ children }) => {
@@ -26,8 +27,7 @@ const RutaPrivada = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
-// Vistas Temporales (Las iremos reemplazando una por una con tus CRUDs reales)
-const Inicio = () => <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100"><h1 className="text-2xl font-bold text-gray-900">Dashboard y Calendario</h1><p className="mt-2 text-gray-500">Aquí irá el resumen de tareas.</p></div>;
+// Vistas Temporales (Las iremos reemplazando una por una con tus CRUDs reales) TODOS BORRADOS :)
 
 function App() {
   return (
