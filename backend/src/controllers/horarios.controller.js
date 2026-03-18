@@ -6,7 +6,8 @@ const pool = require('../config/db');
  * ==============================
  */
 exports.crearHorario = async (req, res) => {
-  const { dia_semana, hora_inicio, hora_fin, id_materia } = req.body;
+  // 1. Agregamos 'color' para recibirlo del frontend
+  const { dia_semana, hora_inicio, hora_fin, id_materia, color } = req.body;
   const id_usuario = req.usuario.id_usuario;
 
   if (!dia_semana || !hora_inicio || !hora_fin || !id_materia) {
@@ -27,11 +28,15 @@ exports.crearHorario = async (req, res) => {
       return res.status(403).json({ error: 'No autorizado' });
     }
 
+    // 2. Definimos un color por defecto en caso de que no llegue
+    const colorFinal = color || 'blue';
+
+    // 3. Añadimos 'color' a la consulta INSERT
     const result = await pool.query(
-      `INSERT INTO horarios (dia_semana, hora_inicio, hora_fin, id_materia)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO horarios (dia_semana, hora_inicio, hora_fin, id_materia, color)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [dia_semana, hora_inicio, hora_fin, id_materia]
+      [dia_semana, hora_inicio, hora_fin, id_materia, colorFinal]
     );
 
     res.status(201).json(result.rows[0]);
@@ -104,7 +109,8 @@ exports.obtenerHorarioCompleto = async (req, res) => {
  */
 exports.actualizarHorario = async (req, res) => {
   const { id } = req.params;
-  const { dia_semana, hora_inicio, hora_fin } = req.body;
+  // Añadimos 'color' también en la actualización por si después quieres editar colores
+  const { dia_semana, hora_inicio, hora_fin, color } = req.body;
   const id_usuario = req.usuario.id_usuario;
 
   try {
@@ -112,14 +118,15 @@ exports.actualizarHorario = async (req, res) => {
       `UPDATE horarios h
        SET dia_semana = $1,
            hora_inicio = $2,
-           hora_fin = $3
+           hora_fin = $3,
+           color = COALESCE($4, h.color)
        FROM materias m
        JOIN periodos p ON m.id_periodo = p.id_periodo
-       WHERE h.id_horario = $4
+       WHERE h.id_horario = $5
          AND h.id_materia = m.id_materia
-         AND p.id_usuario = $5
+         AND p.id_usuario = $6
        RETURNING h.*`,
-      [dia_semana, hora_inicio, hora_fin, id, id_usuario]
+      [dia_semana, hora_inicio, hora_fin, color, id, id_usuario]
     );
 
     if (result.rows.length === 0) {

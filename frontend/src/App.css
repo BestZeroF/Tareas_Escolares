@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: #f3f4f6; /* Un fondo gris sutil para resaltar la tarjeta blanca */
+  color: #111827; /* Gris muy oscuro para el texto base */
+  max-width: none; /* Quitamos las barras laterales de Vite */
+  text-align: left;
+}
