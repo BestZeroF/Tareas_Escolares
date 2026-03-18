@@ -3,14 +3,14 @@
 /* Habilitar variante dark por clase */
 @variant dark (&:where(.dark, .dark *));
 
-/* Estilos base que respetan el modo oscuro */
+/* Estilos base */
 @layer base {
   html, body, #root {
     width: 100%;
     min-height: 100vh;
     margin: 0;
     padding: 0;
-    /* Fondo gris claro en modo luz, casi negro en modo oscuro */
+    /* Aplicamos los fondos usando @apply para que Tailwind los procese */
     @apply bg-[#f3f4f6] dark:bg-gray-950 text-[#111827] dark:text-gray-100 transition-colors duration-300;
   }
 }
